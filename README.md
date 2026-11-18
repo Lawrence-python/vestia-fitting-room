@@ -37,3 +37,12 @@
 
 - [設定 GitHub Pages 發布來源](https://docs.github.com/en/pages/getting-started-with-github-pages/configuring-a-publishing-source-for-your-github-pages-site)
 - [建立 GitHub Pages 網站](https://docs.github.com/en/pages/getting-started-with-github-pages/creating-a-github-pages-site)
+
+## 個人照片預覽
+
+- 試穿鏡下方可選擇自己的 JPG、PNG 或 WebP 照片（12 MB 以下）。
+- 未選擇照片、移除照片或重新整理時，沿用現有示範模特兒。
+- 有照片時可切換「我的照片」與「示範穿搭」，更換或移除照片。
+- 照片只使用瀏覽器暫存的 object URL，不會上傳到 GitHub 或其他伺服器。
+- 個人照片目前是原圖預覽；商品換裝使用現有 AI 模特兒穿搭圖，尚未串接個人照片 AI 試穿服務。
+- 16 秒展示模式繼續使用示範模特兒，結束後恢復原本的照片顯示模式。

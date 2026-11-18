@@ -229,13 +229,35 @@
 @media(prefers-reduced-motion:reduce){.responsive-root{scroll-behavior:auto}}
 
 </style>
+<style id="photoUploadStyles">
+.photo-tools{padding:12px 0 0;position:relative;z-index:6}
+.photo-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.photo-button{min-height:44px;padding:9px 14px;border:1px solid #bfc2b7;border-radius:3px;font-size:12px;background:#faf9f6;line-height:1.4}
+.photo-button:hover{background:#e9ece2}
+.photo-button:disabled{opacity:.6}
+.photo-modes{display:flex;border:1px solid #bfc2b7;border-radius:3px;overflow:hidden}
+.photo-modes button{min-height:44px;padding:9px 13px;font-size:12px;line-height:1.4}
+.photo-modes button[aria-pressed=true]{background:var(--ink);color:white}
+.photo-remove{margin-left:auto;text-decoration:underline;color:var(--muted);min-height:44px;padding:6px 2px;font-size:12px}
+.photo-help{margin:8px 0 0;font-size:11px;line-height:1.6;color:var(--muted);overflow-wrap:anywhere}
+.photo-error{margin:8px 0 0;font-size:12px;line-height:1.6;color:#8b3e2b}
+.personal-photo{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;background:#fff;z-index:5;pointer-events:none}
+.photo-view .model-layer,.photo-view .floor-shadow,.photo-view .scan-line{visibility:hidden}
+#personalPhoto[hidden],#photoModes[hidden],#removePhoto[hidden],.photo-error[hidden]{display:none!important}
+.capture-root .photo-tools,.demo-mode .photo-tools{display:none}
+@media(max-width:767px){.photo-tools{padding-top:8px}.photo-button{padding:8px 11px}.photo-help{font-size:10px;margin-top:6px}.photo-modes button{padding:8px 11px}.photo-remove{padding:6px 2px}.photo-view .worn-rail{opacity:.92}}
+</style>
 </head>
 <body>
 <div id="viewport"><main id="canvas" aria-label="VESTIA 虛擬試穿間">
 <header><div class="brand-lockup"><div class="wordmark">VESTIA</div><div class="brand-note">CONSIDERED PIECES.<br>ENDLESS POSSIBILITIES.</div></div><div class="header-center">THE FITTING ROOM</div><div class="header-right"><span class="studio-live"><i class="dot"></i> PERSONAL STUDIO</span><button class="demo-control" id="demoButton" disabled aria-label="播放16秒示範">▷ &nbsp; Play demo</button><button class="cart-control" id="cartButton" aria-label="檢視購物袋"><svg class="icon" viewBox="0 0 24 24"><path d="M5 7h14l1 14H4L5 7Z M8 8V6a4 4 0 0 1 8 0v2"/></svg><span id="cartCount">0</span></button></div></header>
 <div class="workspace">
 <section class="catalog" id="catalogSection" aria-label="商品目錄"><div class="eyebrow">THE EVERYDAY EDIT / VOL. 01</div><h2 class="catalog-title">Make it your own.</h2><p class="subline">Nine considered pieces. A look that feels like you.</p><div class="search-wrap"><svg class="icon" viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 4 4"/></svg><input id="search" placeholder="Search pieces, colours, textures…" aria-label="搜尋商品"></div><div class="tabs" role="tablist" aria-label="商品分類"><button class="tab" role="tab" aria-selected="true" data-filter="all">All pieces <small>09</small></button><button class="tab" role="tab" aria-selected="false" data-filter="T">Tops</button><button class="tab" role="tab" aria-selected="false" data-filter="S">Skirts</button><button class="tab" role="tab" aria-selected="false" data-filter="B">Bags</button></div><div id="products"></div><div id="noResults" class="no-results" hidden>No pieces found. Try “ivory” or “leather”.</div><div class="catalog-foot"><span>Designed to be worn together.</span><span id="readyLabel" class="catalog-loading">Preparing your studio…</span></div></section>
-<div class="mirror-column"><section class="mirror-section" id="mirrorSection" aria-label="模特兒試穿舞台"><div class="stage" id="stage"><div class="stage-top"><span class="stage-title">YOUR VIRTUAL MIRROR</span><span class="stage-number">01 / STUDIO</span></div><div class="trying" role="status"><i class="dot"></i><span id="tryingText">Your everyday, reimagined.</span></div><div class="worn-rail"><div class="rail-label">ON YOU</div><div id="rail"></div></div><div class="model-stack" id="modelStack"></div><div class="floor-shadow"></div><div class="scan-line" id="scan"></div><div class="stage-bottom"><span>FRONT VIEW &nbsp; · &nbsp; AI MODEL</span><button id="resetButton" aria-label="重設穿搭">↺ &nbsp; Reset look</button></div><div id="assetError" class="asset-error" role="alert"></div></div><div class="stage-caption"><span>SELECT A PIECE. SEE THE POSSIBILITY.</span><span>VIRTUAL TRY-ON EXPERIENCE</span></div></section></div>
+<div class="mirror-column"><section class="mirror-section" id="mirrorSection" aria-label="模特兒試穿舞台"><div class="stage" id="stage"><div class="stage-top"><span class="stage-title">YOUR VIRTUAL MIRROR</span><span class="stage-number">01 / STUDIO</span></div><div class="trying" role="status"><i class="dot"></i><span id="tryingText">Your everyday, reimagined.</span></div><div class="worn-rail"><div class="rail-label" id="railLabel">ON YOU</div><div id="rail"></div></div><div class="model-stack" id="modelStack"><img id="personalPhoto" class="personal-photo" alt="我的照片，僅供預覽，尚未套用商品服裝" hidden></div><div class="floor-shadow"></div><div class="scan-line" id="scan"></div><div class="stage-bottom"><span id="modelType">FRONT VIEW &nbsp; · &nbsp; AI MODEL</span><button id="resetButton" aria-label="重設穿搭">↺ &nbsp; Reset look</button></div><div id="assetError" class="asset-error" role="alert"></div></div><div class="photo-tools" aria-label="模特兒照片設定">
+<input id="photoInput" type="file" accept="image/jpeg,image/png,image/webp" aria-label="選擇自己的照片" hidden>
+<div class="photo-actions"><button class="photo-button" id="photoUploadButton" aria-describedby="photoHelp">＋ 上傳我的照片</button><div id="photoModes" class="photo-modes" role="group" aria-label="照片顯示模式" hidden><button id="showPersonalPhoto" aria-pressed="false">我的照片</button><button id="showSampleModel" aria-pressed="true">示範穿搭</button></div><button id="removePhoto" class="photo-remove" hidden>移除照片</button></div>
+<p id="photoHelp" class="photo-help">建議使用正面全身照。JPG / PNG / WebP，12 MB 以下。照片僅在此頁暫存；未上傳時使用預設模特兒。</p><p id="photoError" class="photo-error" role="alert" hidden></p>
+</div><div class="stage-caption"><span>SELECT A PIECE. SEE THE POSSIBILITY.</span><span>VIRTUAL TRY-ON EXPERIENCE</span></div></section></div>
 <aside class="look-panel" id="lookSection" aria-label="目前穿搭"><div class="look-summary"><div class="panel-title-line"><h1>Your Look</h1><span id="piecesCount" class="pieces-count">2 PIECES</span></div><p class="look-subtitle">A little intention. A whole new feeling.</p><div id="lookItems" class="look-items"></div><div class="total"><span>Your total</span><strong><small>NT$</small><b id="totalPrice" style="font-weight:400">4,560</b></strong></div></div><div class="fit-shopping"><div class="fit-box"><div class="fit-heading"><h2>Style &amp; Fit</h2><span>THE VESTIA EDIT</span></div><div id="scores"></div><div class="fit-note">Illustrative style scores · not a body-size assessment.</div></div><button class="shop" id="shopButton">Shop the look <span>↗</span></button><p class="shop-note">Curated together. Yours to make individual.</p></div><div class="complete-section"><div class="complete-heading"><h2>Complete looks</h2><span>ONE CLICK, ALL YOU</span></div><div id="completeLooks"></div></div></aside>
 </div>
 <nav class="mobile-nav" aria-label="手機快速導覽"><button data-scroll="#mirrorSection" aria-label="查看試穿鏡"><span>試穿鏡</span><small>VIRTUAL MIRROR</small></button><button data-scroll="#catalogSection" aria-label="選擇商品"><span>選單品</span><small>YOUR WARDROBE</small></button><button data-scroll="#lookSection" aria-label="查看穿搭清單"><span>穿搭清單</span><small id="mobileTotal">NT$4,560</small></button></nav>
@@ -266,6 +288,7 @@ const ASSETS=[];for(let t=1;t<=3;t++)for(let s=1;s<=3;s++)ASSETS.push(`T0${t}_S0
 const assetSet=new Set(ASSETS), failedAssets=new Set(), $=s=>document.querySelector(s), money=n=>n.toLocaleString('en-US'), key=s=>`${s.t}_${s.s}_${s.b}`, img=id=>`img/${id}.jpg`;
 let state={...INITIAL}, transition=null, frameRequest=0, toastExpiry=0, currentToast='', lastUI='', cart=[], demoRunning=false, demoStart=0, activeFilter='all', pendingBag='B01';
 const layers={};
+let personalPhotoURL='', photoView='sample', photoLoadId=0, latestTryingLabel='Your everyday, reimagined.';
 function build(){
  $('#products').innerHTML=[['T','Tops','01 — 03'],['S','Skirts','04 — 06'],['B','Bags','07 — 09']].map(([type,title,num])=>`<section class="category" data-category="${type}"><div class="category-heading"><h2>${title}</h2><span${type==='B'?' id="bagAvailability" class="bag-availability" role="status"':''}>${num}</span></div><div class="product-grid">${PRODUCTS.filter(p=>p.id[0]===type).map(p=>`<button class="product" id="product-${p.id}" data-id="${p.id}" aria-label="試穿 ${p.cn} ${p.color} NT$${p.price}"><span class="wearing-tag">WEARING</span>${type==='B'?'<span class="bag-help">LOOK REQUIRED</span>':''}<div class="product-img"><img src="${img(p.id)}" alt="${p.cn}，${p.color}" draggable="false"></div><div class="product-info"><span class="product-name">${p.name}</span><span class="product-detail"><span><i class="swatch" style="background:${p.hex}"></i>${p.color}</span><span>$${money(p.price)}</span></span></div></button>`).join('')}</div></section>`).join('');
  ASSETS.forEach(id=>{const el=new Image();el.className='model-layer';el.alt='VESTIA AI 模特兒穿搭';el.src=img(id);el.id=`outfit-${id}`;$('#modelStack').append(el);layers[id]=el});
@@ -283,8 +306,55 @@ function build(){
  document.addEventListener('keydown',e=>{if(e.key==='Escape'){if($('#bagBackdrop').style.display==='flex')closeBagOptions();else if(demoRunning)stopDemo();else closeCart()}if(e.key==='Tab'&&$('#bagBackdrop').style.display==='flex'){const els=Array.from($('#bagBackdrop').querySelectorAll('button'));if(e.shiftKey&&document.activeElement===els[0]){e.preventDefault();els.at(-1).focus()}else if(!e.shiftKey&&document.activeElement===els.at(-1)){e.preventDefault();els[0].focus()}}if(e.key==='Tab'&&$('#cartBackdrop').style.display==='flex'){const els=[$('#closeCart'),$('#continueButton')];if(e.shiftKey&&document.activeElement===els[0]){e.preventDefault();els[1].focus()}else if(!e.shiftKey&&document.activeElement===els[1]){e.preventDefault();els[0].focus()}}});
  $('#demoButton').addEventListener('click',()=>demoRunning?stopDemo():playDemo());
  document.querySelectorAll('[data-scroll]').forEach(el=>el.addEventListener('click',()=>{if(demoRunning)stopDemo();const behavior=matchMedia('(prefers-reduced-motion: reduce)').matches?'instant':'smooth';if(el.dataset.scroll==='#mirrorSection')window.scrollTo({top:0,behavior});else $(el.dataset.scroll).scrollIntoView({block:'start',behavior})}));
- updateUI(state);draw(state,null,1);
+ setupPhotoUpload();updateUI(state);draw(state,null,1);
 }
+
+function personalPhotoVisible(){return !!personalPhotoURL&&photoView==='personal'&&!captureMode&&!demoRunning&&!$('#canvas').classList.contains('demo-mode')}
+function refreshPhotoUI(){
+ const hasPhoto=!!personalPhotoURL,personal=personalPhotoVisible();
+ $('#stage').classList.toggle('photo-view',personal);$('#personalPhoto').hidden=!personal;
+ $('#photoModes').hidden=!hasPhoto;$('#removePhoto').hidden=!hasPhoto;
+ $('#photoUploadButton').textContent=hasPhoto?'更換照片':'＋ 上傳我的照片';
+ $('#showPersonalPhoto').setAttribute('aria-pressed',String(personal));$('#showSampleModel').setAttribute('aria-pressed',String(!personal));
+ $('#modelType').textContent=personal?'MY PHOTO · PREVIEW ONLY':'FRONT VIEW · AI MODEL';$('#railLabel').textContent=personal?'SELECTED':'ON YOU';
+ document.querySelectorAll('.wearing-tag').forEach(el=>el.textContent=personal?'SELECTED':'WEARING');
+ $('#photoHelp').textContent=hasPhoto?'個人照片僅供預覽；商品換裝請切換至「示範穿搭」。照片不會傳送到伺服器，重新整理後會清除。':'建議使用正面全身照。JPG / PNG / WebP，12 MB 以下。照片僅在此頁暫存；未上傳時使用預設模特兒。';
+ $('#tryingText').textContent=personal?'我的照片 · 原圖預覽':latestTryingLabel;
+}
+function setPhotoView(view){if(demoRunning)stopDemo();photoView=view==='personal'&&personalPhotoURL?'personal':'sample';refreshPhotoUI()}
+function setPhotoBusy(busy){$('#photoUploadButton').disabled=busy;$('#photoUploadButton').setAttribute('aria-busy',String(busy));if(busy)$('#photoUploadButton').textContent='讀取照片中…'}
+function photoError(message){$('#photoError').textContent=message;$('#photoError').hidden=!message}
+function isSupportedPhoto(bytes){
+ const starts=signature=>signature.every((n,i)=>bytes[i]===n);
+ return starts([255,216,255])||starts([137,80,78,71,13,10,26,10])||(starts([82,73,70,70])&&[87,69,66,80].every((n,i)=>bytes[i+8]===n));
+}
+async function loadPersonalPhoto(file){
+ if(!file)return;
+ if(demoRunning)stopDemo();
+ const request=++photoLoadId;let candidateURL='';photoError('');setPhotoBusy(true);
+ try{
+  if(file.size>12*1024*1024)throw Error('照片需小於或等於 12 MB，請選擇較小的照片。');
+  const bytes=new Uint8Array(await file.slice(0,12).arrayBuffer());
+  if(!isSupportedPhoto(bytes))throw Error('請選擇 JPG、PNG 或 WebP 圖片；不支援 HEIC、SVG 或其他檔案。');
+  if(request!==photoLoadId)return;
+  candidateURL=URL.createObjectURL(file);const image=new Image();image.src=candidateURL;await image.decode();
+  if(image.naturalWidth<96||image.naturalHeight<96)throw Error('照片尺寸太小，請選擇至少 96 × 96 像素的圖片。');
+  if(image.naturalWidth*image.naturalHeight>40000000)throw Error('照片解析度過高，請先縮小至 4,000 萬像素以下。');
+  if(request!==photoLoadId)return;
+  const previous=personalPhotoURL;personalPhotoURL=candidateURL;candidateURL='';$('#personalPhoto').src=personalPhotoURL;photoView='personal';refreshPhotoUI();
+  if(previous)URL.revokeObjectURL(previous);
+ }catch(error){if(request===photoLoadId)photoError(error.message?.startsWith('照片')||error.message?.startsWith('請選擇')?error.message:'這張照片無法讀取，請改用其他 JPG、PNG 或 WebP 圖片。')}
+ finally{if(candidateURL)URL.revokeObjectURL(candidateURL);if(request===photoLoadId){setPhotoBusy(false);refreshPhotoUI()}}
+}
+function removePersonalPhoto(){
+ ++photoLoadId;if(personalPhotoURL)URL.revokeObjectURL(personalPhotoURL);personalPhotoURL='';photoView='sample';$('#personalPhoto').removeAttribute('src');$('#photoInput').value='';photoError('');setPhotoBusy(false);refreshPhotoUI();$('#photoUploadButton').focus({preventScroll:true});
+}
+function setupPhotoUpload(){
+ $('#photoUploadButton').addEventListener('click',()=>{if(demoRunning)stopDemo();$('#photoInput').click()});
+ $('#photoInput').addEventListener('change',e=>{const file=e.target.files?.[0];e.target.value='';loadPersonalPhoto(file)});
+ $('#showPersonalPhoto').addEventListener('click',()=>setPhotoView('personal'));$('#showSampleModel').addEventListener('click',()=>setPhotoView('sample'));$('#removePhoto').addEventListener('click',removePersonalPhoto);refreshPhotoUI();
+}
+
 function total(s){return [s.t,s.s,s.b].filter(id=>BY_ID[id]).reduce((sum,id)=>sum+BY_ID[id].price,0)}
 function updateUI(s){
  const k=key(s);if(lastUI===k)return;lastUI=k;
@@ -327,7 +397,7 @@ function openBagOptions(id){pendingBag=id;$('#bagDialogDescription').textContent
 }
 function syncModalLock(){document.body.classList.toggle('modal-open',$('#bagBackdrop').style.display==='flex'||$('#cartBackdrop').style.display==='flex')}
 function closeBagOptions(){$('#bagBackdrop').style.display='none';syncModalLock();$(`#product-${pendingBag}`).focus({preventScroll:true})}
-function change(next,part,label){transition={prev:{...state},next:{...next},part,start:performance.now()};state={...next};$('#tryingText').textContent=label;updateUI(state);tick()}
+function change(next,part,label){transition={prev:{...state},next:{...next},part,start:performance.now()};state={...next};latestTryingLabel=label;$('#tryingText').textContent=personalPhotoVisible()?'已選單品 · 個人照片尚未換裝':label;updateUI(state);if(personalPhotoVisible())showToast('單品已選好。切換至「示範穿搭」查看服裝效果。');tick()}
 function tick(){if(frameRequest||demoRunning)return;frameRequest=requestAnimationFrame(now=>{frameRequest=0;if(transition){const p=clamp((now-transition.start)/850);draw(state,transition.prev,p,transition.part);if(p>=1)transition=null}if(toastExpiry&&now>=toastExpiry){$('#toast').style.opacity='0';toastExpiry=0}if(transition||toastExpiry)tick()})}
 function filterProducts(){const q=$('#search').value.toLowerCase().trim();let count=0;document.querySelectorAll('.tab').forEach(t=>t.setAttribute('aria-selected',String(t.dataset.filter===activeFilter)));document.querySelectorAll('.category').forEach(section=>{let visible=0;section.querySelectorAll('.product').forEach(el=>{const p=BY_ID[el.dataset.id],match=(activeFilter==='all'||p.id[0]===activeFilter)&&Object.values(p).join(' ').toLowerCase().includes(q);el.hidden=!match;if(match)visible++});section.hidden=!visible;count+=visible});$('#noResults').hidden=!!count}
 function shop(){if(demoRunning)return;cart=[state.t,state.s,state.b].filter(x=>BY_ID[x]);$('#cartCount').textContent=String(cart.length);showToast('Your look, saved to your bag.');openCart()}
@@ -358,7 +428,7 @@ function positionDemo(t){
 }
 function renderAt(time){
  const t=clamp(Number(time)||0,0,16);$('#canvas').classList.add('demo-mode');
- if(!demoModePrepared){activeFilter='all';$('#search').value='';filterProducts();$('#cartBackdrop').style.display='none';$('#bagBackdrop').style.display='none';syncModalLock();demoModePrepared=true}
+ if(!demoModePrepared){activeFilter='all';$('#search').value='';filterProducts();$('#cartBackdrop').style.display='none';$('#bagBackdrop').style.display='none';syncModalLock();refreshPhotoUI();demoModePrepared=true}
  let s={...INITIAL},prev=null,event=null;for(const e of DEMO){if(e.at>t)break;prev={...s};s=applyEvent(s,e);event=e}
  state={...s};updateUI(s);positionDemo(t);const p=event?clamp((t-event.at)/.85):1;draw(s,prev,event?.type==='shop'?1:p,event?.type||'full');$('#tryingText').textContent=event?event.label:'Your everyday, reimagined.';
  const bought=t>=14;$('#cartCount').textContent=bought?'3':'0';$('#shopButton').innerHTML=bought?'Added to bag <span>✓</span>':'Shop the look <span>↗</span>';
@@ -371,8 +441,8 @@ function renderAt(time){
  window.__demoState={time:t,...s,asset:key(s),total:total(s),event:event?.type||'initial'};
  return window.__demoState;
 }
-function playDemo(){if(!window.assetsReady)return;demoRunning=true;demoModePrepared=false;transition=null;cancelAnimationFrame(frameRequest);frameRequest=0;demoStart=performance.now();$('#demoMusic').currentTime=0;$('#demoMusic').volume=.7;$('#demoMusic').play().catch(()=>{});const step=now=>{if(!demoRunning)return;const t=(now-demoStart)/1000;renderAt(t);if(t<16)frameRequest=requestAnimationFrame(step);else{frameRequest=0;stopDemo();$('#demoButton').innerHTML='↻ &nbsp; Replay demo'}};frameRequest=requestAnimationFrame(step)}
-function stopDemo(){$('#demoMusic').pause();$('#demoMusic').currentTime=0;demoRunning=false;demoModePrepared=false;cancelAnimationFrame(frameRequest);frameRequest=0;$('#canvas').classList.remove('demo-mode');$('#ripple').style.opacity='0';$('#toast').style.opacity='0';$('#demoButton').innerHTML='▷ &nbsp; Play demo';$('#shopButton').innerHTML='Shop the look <span>↗</span>';cart=[];$('#cartCount').textContent='0';draw(state,null,1);$('#tryingText').textContent='Your everyday, reimagined.'}
+function playDemo(){if(!window.assetsReady)return;demoRunning=true;demoModePrepared=false;transition=null;cancelAnimationFrame(frameRequest);frameRequest=0;demoStart=performance.now();refreshPhotoUI();$('#demoMusic').currentTime=0;$('#demoMusic').volume=.7;$('#demoMusic').play().catch(()=>{});const step=now=>{if(!demoRunning)return;const t=(now-demoStart)/1000;renderAt(t);if(t<16)frameRequest=requestAnimationFrame(step);else{frameRequest=0;stopDemo();$('#demoButton').innerHTML='↻ &nbsp; Replay demo'}};frameRequest=requestAnimationFrame(step)}
+function stopDemo(){$('#demoMusic').pause();$('#demoMusic').currentTime=0;demoRunning=false;demoModePrepared=false;cancelAnimationFrame(frameRequest);frameRequest=0;$('#canvas').classList.remove('demo-mode');$('#ripple').style.opacity='0';$('#toast').style.opacity='0';$('#demoButton').innerHTML='▷ &nbsp; Play demo';$('#shopButton').innerHTML='Shop the look <span>↗</span>';cart=[];$('#cartCount').textContent='0';draw(state,null,1);latestTryingLabel='Your everyday, reimagined.';refreshPhotoUI()}
 function resize(){if(captureMode){$('#canvas').style.transform='none'}else{$('#canvas').style.transform='none';if(!demoRunning){if(transition)draw(state,transition.prev,clamp((performance.now()-transition.start)/850),transition.part);else draw(state,null,1)}}}
 window.addEventListener('resize',resize);build();resize();window.renderAt=renderAt;window.VESTIA={products:PRODUCTS,looks:LOOKS,assets:ASSETS,getState:()=>({...state}),choose,selectLook,stopDemo};
 const captureParams=new URLSearchParams(location.search);if(captureParams.has('capture')){document.documentElement.classList.add('capture-root');const c=document.createElement('div');c.id='captureControls';c.innerHTML='<label for="captureTime">Capture time (seconds)</label><input type="number" id="captureTime" disabled step="0.000001" min="0" max="16" value="0" aria-label="Capture time (seconds)">';document.body.append(c);$('#captureTime').addEventListener('input',e=>renderAt(Number(e.target.value)));}
