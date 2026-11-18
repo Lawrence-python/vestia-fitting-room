@@ -38,11 +38,14 @@
 - [設定 GitHub Pages 發布來源](https://docs.github.com/en/pages/getting-started-with-github-pages/configuring-a-publishing-source-for-your-github-pages-site)
 - [建立 GitHub Pages 網站](https://docs.github.com/en/pages/getting-started-with-github-pages/creating-a-github-pages-site)
 
-## 個人照片預覽
+## 上傳人臉，套用至穿搭模特兒
 
-- 試穿鏡下方可選擇自己的 JPG、PNG 或 WebP 照片（12 MB 以下）。
-- 未選擇照片、移除照片或重新整理時，沿用現有示範模特兒。
-- 有照片時可切換「我的照片」與「示範穿搭」，更換或移除照片。
-- 照片只使用瀏覽器暫存的 object URL，不會上傳到 GitHub 或其他伺服器。
-- 個人照片目前是原圖預覽；商品換裝使用現有 AI 模特兒穿搭圖，尚未串接個人照片 AI 試穿服務。
-- 16 秒展示模式繼續使用示範模特兒，結束後恢復原本的照片顯示模式。
+1. 按試穿鏡下方「上傳人臉照片」，選擇 JPG、PNG 或 WebP 正面單人照（12 MB 以下）。
+2. 自動辨識成功時會套用至全部 18 張穿搭圖。若裝置無法啟動辨識元件，依序點選照片中的畫面左眼、右眼、嘴巴中央，再按「套用人臉」。
+3. 可切換「我的臉／預設臉」、調整對位或移除人臉；未上傳、移除或重新整理時使用預設臉。衣服與包包仍可正常切換。
+
+此版本是瀏覽器內的二維臉部對位與柔邊合成，不是生成式照片重繪。髮型、身材、姿勢與服裝沿用原模特兒；照片角度、光線與標記位置會影響效果。
+
+照片使用本機 canvas 與 object URL 處理，不會傳送到 GitHub 或辨識服務。首次選檔會從 Google 模型儲存空間與 jsDelivr 載入釘選版本的 MediaPipe 執行元件與模型；此步驟需網路與裝置支援，失敗時仍可手動三點對位。
+
+技術參考：[Google MediaPipe Face Landmarker 官方文件](https://developers.google.com/edge/mediapipe/solutions/vision/face_landmarker?tab=Web)。
